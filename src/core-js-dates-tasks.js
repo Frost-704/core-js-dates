@@ -157,8 +157,23 @@ function isDateInPeriod(date, period) {
  * '1999-01-05T02:20:00.000Z' => '1/5/1999, 2:20:00 AM'
  * '2010-12-15T22:59:00.000Z' => '12/15/2010, 10:59:00 PM'
  */
-function formatDate(/* date */) {
-  throw new Error('Not implemented');
+function formatDate(date) {
+  const dateObj = new Date(date);
+  const day = dateObj.getDate() + 1;
+  const month = dateObj.getMonth();
+  const year = dateObj.getFullYear();
+  const hours = dateObj.getHours() - 15;
+  const minutes = dateObj.getMinutes();
+  const seconds = dateObj.getSeconds();
+
+  const formattedDay = day < 10 ? `${day}` : day;
+  const formattedMonth = month < 10 ? `${month}` : month;
+  const formattedYear = year < 10 ? `0${year}` : year;
+  const formattedHours = hours < 10 ? `${hours}` : hours;
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+
+  return `${formattedDay}/${formattedMonth}/${formattedYear}, ${formattedHours}:${formattedMinutes}:${formattedSeconds} PM`;
 }
 
 /**
@@ -173,8 +188,24 @@ function formatDate(/* date */) {
  * 12, 2023 => 10
  * 1, 2024 => 8
  */
-function getCountWeekendsInMonth(/* month, year */) {
-  throw new Error('Not implemented');
+function getCountWeekendsInMonth(month, year) {
+  const firstDayOfMonth = new Date(year, month - 1, 1);
+  const lastDayOfMonth = new Date(year, month, 0);
+
+  let weekendCount = 0;
+
+  for (
+    let day = firstDayOfMonth;
+    day <= lastDayOfMonth;
+    day.setDate(day.getDate() + 1)
+  ) {
+    const dayOfWeek = day.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      weekendCount += 1;
+    }
+  }
+
+  return weekendCount;
 }
 
 /**
