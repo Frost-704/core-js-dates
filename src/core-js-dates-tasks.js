@@ -74,10 +74,21 @@ function getDayName(date) {
  * Date('2024-02-13T00:00:00Z') => Date('2024-02-16T00:00:00Z')
  * Date('2024-02-16T00:00:00Z') => Date('2024-02-23T00:00:00Z')
  */
-function getNextFriday(/* date */) {
-  throw new Error('Not implemented');
-}
+function getNextFriday(date) {
+  const dayOfWeek = date.getDay();
+  const hours = date.getHours();
 
+  if (dayOfWeek === 5 && hours >= 0) {
+    date.setDate(date.getDate() + 7);
+  } else {
+    const daysToAdd = dayOfWeek <= 5 ? 5 - dayOfWeek : 5 + (7 - dayOfWeek);
+    date.setDate(date.getDate() + daysToAdd);
+  }
+
+  date.setHours(3, 0, 0, 0);
+
+  return date;
+}
 /**
  * Returns the number of days in a specified month and year.
  *
