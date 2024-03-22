@@ -159,21 +159,19 @@ function isDateInPeriod(date, period) {
  */
 function formatDate(date) {
   const dateObj = new Date(date);
-  const day = dateObj.getDate() + 1;
-  const month = dateObj.getMonth();
-  const year = dateObj.getFullYear();
-  const hours = dateObj.getHours() - 15;
+  const day = dateObj.getUTCDate();
+  const month = dateObj.getMonth() === 12 ? 12 : dateObj.getMonth() + 1;
+  const year = dateObj.getFullYear().toString();
+  const hours = dateObj.getUTCHours();
   const minutes = dateObj.getMinutes();
   const seconds = dateObj.getSeconds();
 
-  const formattedDay = day < 10 ? `${day}` : day;
-  const formattedMonth = month < 10 ? `${month}` : month;
-  const formattedYear = year < 10 ? `0${year}` : year;
-  const formattedHours = hours < 10 ? `${hours}` : hours;
+  const amOrPm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = hours % 12 || 12;
   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
   const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
 
-  return `${formattedDay}/${formattedMonth}/${formattedYear}, ${formattedHours}:${formattedMinutes}:${formattedSeconds} PM`;
+  return `${month}/${day}/${year}, ${formattedHours}:${formattedMinutes}:${formattedSeconds} ${amOrPm}`;
 }
 
 /**
@@ -224,7 +222,6 @@ function getCountWeekendsInMonth(month, year) {
 function getWeekNumberByDate(/* date */) {
   throw new Error('Not implemented');
 }
-
 /**
  * Returns the date of the next Friday the 13th from a given date.
  * Friday the 13th is considered an unlucky day in some cultures.
