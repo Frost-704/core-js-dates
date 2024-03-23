@@ -309,8 +309,39 @@ function getQuarter(date) {
  * { start: '01-01-2024', end: '15-01-2024' }, 1, 3 => ['01-01-2024', '05-01-2024', '09-01-2024', '13-01-2024']
  * { start: '01-01-2024', end: '10-01-2024' }, 1, 1 => ['01-01-2024', '03-01-2024', '05-01-2024', '07-01-2024', '09-01-2024']
  */
-function getWorkSchedule(/* period, countWorkDays, countOffDays */) {
-  throw new Error('Not implemented');
+function getWorkSchedule(period, countWorkDays, countOffDays) {
+  console.log('🚀 ~ getWorkSchedule ~ period:', period);
+  const { start, end } = period;
+  const [startDay, startMonth, startYear] = start.split('-').map(Number);
+  const [endDay, endMonth, endYear] = end.split('-').map(Number);
+  const startDate = new Date(startYear, startMonth - 1, startDay);
+  const endDate = new Date(endYear, endMonth - 1, endDay);
+  let currentDate = startDate;
+  let currentDay = startDay;
+  const workingDays = [];
+  const weekendDays = [];
+  while (currentDate < endDate) {
+    currentDate = new Date(startYear, startMonth - 1, currentDay);
+    const day = currentDate.getUTCDate().toString().padStart(2, '0');
+    const month = (currentDate.getUTCMonth() + 1).toString().padStart(2, '0');
+    const year = currentDate.getFullYear().toString().padStart(2, '0');
+    workingDays.push(`${day}-${month}-${year}`);
+    currentDay += countWorkDays;
+  }
+  let startCurrentDate = startDate;
+  let startCurrentDay = startDay;
+  while (startCurrentDate < endDate) {
+    startCurrentDate = new Date(startYear, startMonth - 1, startCurrentDay);
+    const day = startCurrentDate.getUTCDate().toString().padStart(2, '0');
+    const month = (startCurrentDate.getUTCMonth() + 1)
+      .toString()
+      .padStart(2, '0');
+    const year = startCurrentDate.getFullYear().toString().padStart(2, '0');
+    weekendDays.push(`${day}-${month}-${year}`);
+    startCurrentDay += countOffDays;
+  }
+  const schedule = workingDays.filter((day) => !weekendDays.includes(day));
+  return schedule;
 }
 
 /**
@@ -325,8 +356,14 @@ function getWorkSchedule(/* period, countWorkDays, countOffDays */) {
  * Date(2022, 2, 1) => false
  * Date(2020, 2, 1) => true
  */
-function isLeapYear(/* date */) {
-  throw new Error('Not implemented');
+function isLeapYear(date) {
+  const year = date.getFullYear();
+  if (year % 4 === 0) {
+    if (year % 100 !== 0 || year % 400 === 0) {
+      return true;
+    }
+  }
+  return false;
 }
 
 module.exports = {
