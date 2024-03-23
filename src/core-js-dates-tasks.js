@@ -215,12 +215,24 @@ function getCountWeekendsInMonth(month, year) {
  * @return {number} - The week number of the year.
  *
  * @example:
- * Date(2024, 0, 3) => 1
+ * Date(2024, 0, 3) => 10
  * Date(2024, 0, 31) => 5
  * Date(2024, 1, 23) => 8
  */
-function getWeekNumberByDate(/* date */) {
-  throw new Error('Not implemented');
+function getWeekNumberByDate(date) {
+  const year = date.getUTCFullYear();
+  const millisecondsInDay = 24 * 60 * 60 * 1000;
+  const daysInWeek = 7;
+  const millisecondsInWeek = millisecondsInDay * daysInWeek;
+  const firstDayOfYear = new Date(Date.UTC(year, 0, 1));
+  const firstDayOfWeek = firstDayOfYear.getUTCDay();
+  let counter = 0;
+  if (firstDayOfWeek !== 1) {
+    counter += 1;
+  }
+  const allTime = Math.abs(date.getTime() - firstDayOfYear.getTime());
+  const weekCounter = Math.ceil(allTime / millisecondsInWeek) + counter;
+  return weekCounter;
 }
 /**
  * Returns the date of the next Friday the 13th from a given date.
@@ -233,8 +245,25 @@ function getWeekNumberByDate(/* date */) {
  * Date(2024, 0, 13) => Date(2024, 8, 13)
  * Date(2023, 1, 1) => Date(2023, 9, 13)
  */
-function getNextFridayThe13th(/* date */) {
-  throw new Error('Not implemented');
+function getNextFridayThe13th(date) {
+  let nextFridayThe13th;
+  let currentMonth = date.getMonth();
+  let currentYear = date.getFullYear();
+
+  while (!nextFridayThe13th) {
+    const nextDate = new Date(currentYear, currentMonth, 13, 0, 0, 0);
+    const dayOfWeek = nextDate.getDay();
+    if (dayOfWeek === 5) {
+      nextFridayThe13th = nextDate;
+    }
+    currentMonth += 1;
+    if (currentMonth === 12) {
+      currentMonth = 0;
+      currentYear += 1;
+    }
+  }
+
+  return nextFridayThe13th;
 }
 
 /**
