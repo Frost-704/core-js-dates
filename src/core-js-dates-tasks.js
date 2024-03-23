@@ -59,7 +59,7 @@ function getDayName(date) {
     'Friday',
     'Saturday',
   ];
-  const daynum = new Date(date).getDay();
+  const daynum = new Date(date).getUTCDay();
   return daysOfWeek[daynum];
 }
 
@@ -79,10 +79,10 @@ function getNextFriday(date) {
   const hours = date.getHours();
 
   if (dayOfWeek === 5 && hours >= 0) {
-    date.setDate(date.getDate() + 7);
+    date.setDate(date.getUTCDate() + 7);
   } else {
     const daysToAdd = dayOfWeek <= 5 ? 5 - dayOfWeek : 5 + (7 - dayOfWeek);
-    date.setDate(date.getDate() + daysToAdd);
+    date.setDate(date.getUTCDate() + daysToAdd);
   }
 
   date.setHours(3, 0, 0, 0);
@@ -101,7 +101,7 @@ function getNextFriday(date) {
  * 2, 2024 => 29
  */
 function getCountDaysInMonth(month, year) {
-  return new Date(year, month, 0).getDate();
+  return new Date(Date.UTC(year, month, 0)).getUTCDate();
 }
 
 /**
