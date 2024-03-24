@@ -222,14 +222,13 @@ function getWeekNumberByDate(date) {
   const millisecondsInDay = 24 * 60 * 60 * 1000;
   const daysInWeek = 7;
   const millisecondsInWeek = millisecondsInDay * daysInWeek;
-  const firstDayOfYear = new Date(Date.UTC(year, 0, 1));
-  const firstDayOfWeek = firstDayOfYear.getUTCDay();
-  let counter = 0;
-  if (firstDayOfWeek !== 1) {
-    counter += 1;
+  let firstDayOfYear = new Date(Date.UTC(year, 0, 1));
+  while (firstDayOfYear.getUTCDay() !== 1) {
+    firstDayOfYear = new Date(firstDayOfYear.getTime() - millisecondsInDay);
   }
+  firstDayOfYear = new Date(firstDayOfYear.getTime() - millisecondsInDay);
   const allTime = Math.abs(date.getTime() - firstDayOfYear.getTime());
-  const weekCounter = Math.ceil(allTime / millisecondsInWeek) + counter;
+  const weekCounter = Math.ceil(allTime / millisecondsInWeek);
   return weekCounter;
 }
 /**
@@ -313,16 +312,26 @@ function getWorkSchedule(period, countWorkDays, countOffDays) {
   const [endDay, endMonth, endYear] = end.split('-').map(Number);
   const startDate = new Date(Date.UTC(startYear, startMonth - 1, startDay));
   const endDate = new Date(Date.UTC(endYear, endMonth - 1, endDay));
-  let currentDate = startDate;
-  let currentDay = startDay;
+  const currentDate = startDate;
   const workingDays = [];
-  while (currentDate < endDate) {
-    currentDate = new Date(Date.UTC(startYear, startMonth - 1, currentDay));
-    const day = currentDate.getUTCDate().toString().padStart(2, '0');
-    const month = (currentDate.getUTCMonth() + 1).toString().padStart(2, '0');
-    const year = currentDate.getFullYear().toString().padStart(2, '0');
-    workingDays.push(`${day}-${month}-${year}`);
-    currentDay += countOffDays;
+
+  while (currentDate <= endDate) {
+    for (let i = 0; i < countWorkDays; i += 1) {
+      const day = currentDate.getUTCDate().toString().padStart(2, '0');
+      const month = (currentDate.getUTCMonth() + 1).toString().padStart(2, '0');
+      const year = currentDate.getFullYear().toString().padStart(2, '0');
+      workingDays.push(`${day}-${month}-${year}`);
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+      if (currentDate > endDate) {
+        break;
+      }
+    }
+    for (let i = 0; i < countOffDays; i += 1) {
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+      if (currentDate > endDate) {
+        break;
+      }
+    }
   }
 
   return workingDays;
