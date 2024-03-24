@@ -75,17 +75,15 @@ function getDayName(date) {
  * Date('2024-02-16T00:00:00Z') => Date('2024-02-23T00:00:00Z')
  */
 function getNextFriday(date) {
-  const dayOfWeek = date.getDay();
-  const hours = date.getHours();
+  const dayOfWeek = date.getUTCDay();
+  const hours = date.getUTCHours();
 
   if (dayOfWeek === 5 && hours >= 0) {
-    date.setDate(date.getUTCDate() + 7);
+    date.setUTCDate(date.getUTCDate() + 7);
   } else {
-    const daysToAdd = dayOfWeek <= 5 ? 5 - dayOfWeek : 5 + (7 - dayOfWeek);
-    date.setDate(date.getUTCDate() + daysToAdd);
+    const daysToAdd = dayOfWeek < 5 ? 5 - dayOfWeek : 5 + (7 - dayOfWeek);
+    date.setUTCDate(date.getUTCDate() + daysToAdd);
   }
-
-  date.setHours(3, 0, 0, 0);
 
   return date;
 }
@@ -313,34 +311,21 @@ function getWorkSchedule(period, countWorkDays, countOffDays) {
   const { start, end } = period;
   const [startDay, startMonth, startYear] = start.split('-').map(Number);
   const [endDay, endMonth, endYear] = end.split('-').map(Number);
-  const startDate = new Date(startYear, startMonth - 1, startDay);
-  const endDate = new Date(endYear, endMonth - 1, endDay);
+  const startDate = new Date(Date.UTC(startYear, startMonth - 1, startDay));
+  const endDate = new Date(Date.UTC(endYear, endMonth - 1, endDay));
   let currentDate = startDate;
   let currentDay = startDay;
   const workingDays = [];
-  const weekendDays = [];
   while (currentDate < endDate) {
-    currentDate = new Date(startYear, startMonth - 1, currentDay);
+    currentDate = new Date(Date.UTC(startYear, startMonth - 1, currentDay));
     const day = currentDate.getUTCDate().toString().padStart(2, '0');
     const month = (currentDate.getUTCMonth() + 1).toString().padStart(2, '0');
     const year = currentDate.getFullYear().toString().padStart(2, '0');
     workingDays.push(`${day}-${month}-${year}`);
-    currentDay += countWorkDays;
+    currentDay += countOffDays;
   }
-  let startCurrentDate = startDate;
-  let startCurrentDay = startDay;
-  while (startCurrentDate < endDate) {
-    startCurrentDate = new Date(startYear, startMonth - 1, startCurrentDay);
-    const day = startCurrentDate.getUTCDate().toString().padStart(2, '0');
-    const month = (startCurrentDate.getUTCMonth() + 1)
-      .toString()
-      .padStart(2, '0');
-    const year = startCurrentDate.getFullYear().toString().padStart(2, '0');
-    weekendDays.push(`${day}-${month}-${year}`);
-    startCurrentDay += countOffDays;
-  }
-  const schedule = workingDays.filter((day) => !weekendDays.includes(day));
-  return schedule;
+
+  return workingDays;
 }
 
 /**
